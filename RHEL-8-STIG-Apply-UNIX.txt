@@ -1,0 +1,1906 @@
+###STIG Apply Checklist####
+
+###Total STIGs = 372###
+###CAT 1 = 21###
+###CAT 2 = 323###
+###CAT 3 = 28###
+
+
+
+touch /tmp/STIG-Apply-Result.txt
+echo "Check /tmp/STIG-Apply-Result.txt file after this is complete"
+timeout -s 3
+
+
+##################
+#####CAT 1's######
+##################
+
+echo Applying CAT I Stigs
+echo Applying CAT I Stigs >> /tmp/STIG-Apply-Result.txt
+
+###V-230235###
+###grub2-setpassword
+echo "-----------------------" >> /tmp/STIG-Apply-Result.txt
+echo "V-230235 grub2-setpassword" >> /tmp/STIG-Apply-Result.txt
+echo "Run command 'grub2-setpassword' to set an encrypted password for grub" >> /tmp/STIG-Apply-Result.txt
+echo "-----------------------" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230234###
+###grub2-setpassword
+echo "V-230234 is covered by V-230235" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-244540###
+sed -i 's/nullok//g' /etc/pam.d/system-auth
+
+
+###V-244541###
+sed -i 's/nullok//g' /etc/pam.d/password-auth
+
+
+###V-230380###
+sed -i 's/PermitEmptyPasswords yes/PermitEmptyPasswords no/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+
+###V-230329###
+sed -i 's/AutomaticLoginEnable=true/AutomaticLoginEnable=false/g' /etc/gdm/custom.conf
+
+
+###V-230558###
+yum remove vsftpd -y
+
+
+###V-230529###
+systemctl disable ctrl-alt-del.target
+systemctl mask ctrl-alt-del.target
+systemctl daemon-reload
+
+
+###V-251706###
+awk -F: '!$2 {print $1}' /etc/shadow >> /tmp/STIG-Apply-Result.txt
+###If anything is found create a password for those accounts or lock them###
+
+
+###V-230284###
+find / -name '*.shosts' >> /tmp/STIG-Apply-Result.txt
+### rm /path/to/file/.shosts ###
+
+
+###V-230283###
+rm /etc/ssh/shosts.equiv
+find / -name shosts.equiv >> /tmp/STIG-Apply-Result.txt
+### rm /path/to/file/shosts.equiv ###
+
+
+###V-230487###
+yum list installed telnet-server >> /tmp/STIG-Apply-Result.txt
+yum remove telnet-server -y
+echo verifying telnet was removed >> /tmp/STIG-Apply-Result.txt
+yum list installed telnet-server >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230264###
+rm -f /tmp/repo-fn.txt
+ls /etc/yum.repos.d/*.repo >> tmp/repo-fn.txt
+while read in; do sed -i 's/gpgcheck=0/gpgcheck=1/g' $in; done < /tmp/repo-fn.txt
+echo "###gpgcheck in *.repo files### >> /tmp/STIG-Apply-Result.txt
+grep -E '^\[.*\}|gpgcheck' /etc/yum.repos.d/*.repo >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230265###
+sed -i 's/localpkg_gpgcheck=0/localpkg_gpgcheck=1/g' /etc/dnf/dnf.conf
+sed -i 's/localpkg_gpgcheck=False/localpkg_gpgcheck=1/g' /etc/dnf/dnf.conf
+sed -i 's/localpkg_gpgcheck=false/localpkg_gpgcheck=1/g' /etc/dnf/dnf.conf
+sed -i 's/localpkg_gpgcheck=no/localpkg_gpgcheck=1/g' /etc/dnf/dnf.conf
+echo "V-230265 localgpg_gpgcheck=True" >> /tmp/STIG-Apply-Result.txt
+grep -i localpkg_gpgcheck /etc/dnf/dnf.conf >> /tmp/STIG-Apply-Result.txt
+
+
+
+###V-230223###
+fips-mode-setup --enable
+
+
+###V-230221###
+cat /etc/redhat-release >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230534###
+echo "V-230221 no account other than root also has a User Identifier (UID) of 0" >> /tmp/STIG-Apply-Result.txt
+awk -F: '$3 == 0 {print $1}' /etc/passwd >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230533###
+yum remove tftp-server -y
+
+
+###V-230530###
+echo "[org/gnome/settings-daemon/plugins/media-keys]" >> /etc/dconf/db/local.d/00-disable-CAD
+echo "logout=''" >> /etc/dconf/db/local.d/00-disable-CAD
+dconf update
+
+
+###V-230531###
+sed -i '/CtrlAltDelBurstAction/d' /etc/systemd/system.conf
+echo "CtrlAltDelBurstAction=none" >> /etc/systemd/system.conf
+systemctl daemon-reload
+
+
+###V-230492###
+yum remove rsh-server -y
+echo "###V-230492### remove rsh-server" >> /tmp/STIG-Apply-Result.txt
+yum list installed rsh-server >> /tmp/STIG-Apply-Result.txt
+
+
+
+
+##################
+#####CAT 2's######
+##################
+
+echo Applying CAT II Stigs
+echo Applying CAT II Stigs >> /tmp/STIG-Apply-Result.txt
+
+###V-230239###
+yum remove krb5-workstation -y
+
+
+###V-230238###
+rm -f /tmp/keytab-fn.txt
+ls -al /etc/*.keytab >> /tmp/keytab-fn.txt
+while read in; do rm -f $in; done < /tmp/keytab-fn.txt
+
+###V-230237###
+sed -i 's/password*sufficient*pam_unix.so*/password sufficient pam_unix.so sha512/g' /etc/pam.d/password-auth
+
+
+###V-230236###
+echo "ExecStart=-/usr/lib/systemd/systemd-sulogin-shell rescue" >> /usr/lib/systemd/system/rescue.service
+
+
+###V-230231###
+sed -i 's/ENCRYPT_METHOD*/ENCRYPT_METHOD SHA512/g' /etc/login.defs
+
+
+###V-230230###
+###Change Passphrase as needed###
+ssh-keygen -n 1234qwer!@#$QWER
+
+
+###V-230233###
+sed -i 's/SHA_CRYPT_MIN_ROUNDS*/SHA_CRYPT_MIN_ROUNDS 5000/g' /etc/login.defs
+sed -i 's/SHA_CRYPT_MAX_ROUNDS*/SHA_CRYPT_MAX_ROUNDS 10000/g' /etc/login.defs
+
+
+###V-230232###
+echo "V-230232 Lock any accounts that do not start with $6$"
+cut -d: -f2 /etc/shadow >> /tmp/STIG-Apply-Result.txt
+
+###V-230334###
+#Not needed on RHEL 8.2 or newer#
+
+
+###V-230335###
+echo "fail_interval = 900" >> /tmp/STIG-Apply-Result.txt
+sed -i 's/.fail_interval*/fail_interval = 900/g' /etc/security/faillock.conf
+
+
+###V-230336###
+#Not needed on RHEL 8.2 or newer#
+
+
+###V-230337###
+echo "unlock_time = 0" >> /tmp/STIG-Apply-Result.txt
+sed -i 's/.unlock_time*/unlock_time = 0/g' /etc/security/faillock.conf
+
+
+###V-230330###
+sed -i 's/.PermitUserEnvironment*/PermitUserEnvironment no/g' /etc/ssh/sshd_config
+
+
+###V-230331###
+#chage -E `date -d "+3 days" +%Y-%m-%d` system_account_name#
+
+
+###V-230332###
+#Not needed on RHEL 8.2 or newer#
+
+
+###V-230333###
+echo "deny = 3" >> /etc/security/faillock.conf
+sed -i 's/.deny*/deny = 3/g' /etc/security/faillock.conf
+
+
+###V-230338###
+#Not needed on RHEL 8.2 or newer#
+
+
+###V-230339###
+echo "dir = /var/log/faillock" >> /etc/security/faillock.conf
+sed -i 's/.dir*/dir = /var/log/faillock /etc/security/faillock.conf
+
+
+###V-245540###
+#Install McAfee Endpoint Security for Linux#
+
+
+###V-244548###
+systemctl enable usbguard.service
+systemctl start usbguard.service
+
+
+###V-244549###
+yum install openssh-server.x86_64 -y
+
+
+###V-244544###
+systemctl enable firewalld
+systemctl start firewalld
+
+
+###V-230257###
+#find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin -perm /022 -exec ls -l {} \;#
+#chmod 755 [FILE]#
+
+
+###V-244546###
+sed -i 's/.permissive*/permissive = 1/g' /etc/fapolicyd/fapolicyd.conf
+
+
+###V-244547###
+yum install usbguard.x86_64 -y
+
+
+###V-244542###
+systemctl enable auditd.service
+systemctl start auditd.service
+
+
+###V-244543###
+sed -i 's/.space_left_action*/space_left_action = email/g' /etc/audit/auditd.conf
+
+
+###V-230248###
+chmod 0755 /var/log
+
+
+###V-230520###
+sed -i 's/\/dev\/mapper\/rhel-var-tmp.*/\/dev\/mapper\/rhel-var-tmp \/var\/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+
+###V-230523###
+yum install fapolicyd.x86_64 -y
+
+
+###V-230522###
+#Fixed with V-230520#
+#Below Command will also fix it#
+#sed -i 's/\/dev\/mapper\/rhel-var-tmp*/\/dev\/mapper\/rhel-var-tmp \/var\/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab#
+
+
+###V-230525###
+sed -i 's/.FirewallBackend=*/FirewallBackend=nftables/g' /etc/firewalld/firewalld.conf
+
+
+###V-230524###
+usbguard generate-policy > /etc/usbguard/rules.conf
+
+
+###V-230527###
+echo "RekeyLimit 1G 1h" >> /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+
+###V-230526###
+systemctl enable sshd.service
+systemctl start sshd.service
+
+
+###V-230240###
+sed -i 's/.SELINUX=*/SELINUX=enforcing/g' /etc/selinux/config
+
+
+###V-230243###
+rm -f /tmp/wwd-fn.txt
+find / -type d \( -perm -0002 -a ! -perm -1000 \) -print 2>/dev/null >> /tmp/wwd-fn.txt
+while read in; do chmod 1777 $in; done < /tmp/wwd-fn.tx
+
+
+###V-230244###
+sed -i 's/.ClientAliveCountMax*/ClientAliveCountMax 1/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+
+###V-230245###
+chmod 0640 /var/log/messages
+
+
+###V-230246###
+chown root /var/log/messages
+
+
+###V-230247###
+chgrp root /var/log/messages
+
+
+###V-230385###
+sed -i 's/.UMASK.*/UMASK 077/g' /etc/bashrc
+sed -i 's/.UMASK.*/UMASK 077/g' /etc/csh.cshrc
+sed -i 's/.UMASK.*/UMASK 077/g' /etc/profile
+sed -i 's/.umask.*/UMASK 077/g' /etc/bashrc
+sed -i 's/.umask.*/UMASK 077/g' /etc/csh.cshrc
+sed -i 's/.umask.*/UMASK 077/g' /etc/profile
+
+
+###V-230384###
+#Fix later#
+
+
+###V-230384###
+#Fix later#
+
+
+###V-230387###
+echo "cron.* /var/log/cron" >> /etc/rsyslog.conf
+systemctl restart rsyslog.service
+
+
+###V-230386###
+echo "-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -k execpriv" >> /tmp/STIG-Apply-Result.txt
+echo "-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k execpriv" >> /tmp/STIG-Apply-Result.txt
+echo "-a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -k execpriv" >> /tmp/STIG-Apply-Result.txt
+echo "-a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k execpriv" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230383###
+sed -i 's/.umask.*/UMASK 077/g' /etc/login.defs
+
+
+###V-230382###
+sed -i 's/.*PrintLastLog.*/PrintLastLog yes/g' /etc/ssh/sshd_config
+
+
+###V-230389###
+echo "postmaster: root" >> /etc/aliases
+
+
+###V-230388###
+echo "action_mail_acct = root" >> /etc/audit/auditd.conf
+
+
+###V-230411###
+yum install audit -y
+
+
+###V-230410###
+echo "-w /etc/sudoers.d/ -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230413###
+echo "-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230412###
+echo "a always,exit -F path=/usr/bin/su -F perm=x -F auid>=1000 -F auid!=unset -k privileged-priv_change" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230419###
+echo "-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230418###
+echo "-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-chage" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230462###
+echo "-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230463###
+echo "-a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=unset -k privileged-usermod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230464###
+echo "-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230465###
+echo "-a always,exit -F path=/usr/bin/kmod -F perm=x -F auid>=1000 -F auid!=unset -k modules" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230466###
+echo "-w /var/log/faillock -p wa -k logins" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230467###
+echo "-w /var/log/lastlog -p wa -k logins" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230561###
+yum remove tuned -y
+
+
+###V-230560###
+yum remove iprutils -y
+
+
+###V-230369###
+echo "minlen = 15" >> /etc/security/pwquality.conf
+
+
+###V-230368###
+echo "password required pam_pwhistory.so use_authtok remember=5 retry=3" >> /etc/pam.d/password-auth
+
+
+###V-230363###
+echo "difok = 8" >> /etc/security/pwquality.conf
+
+
+###V-230362###
+echo "minclass = 4" >> /etc/security/pwquality.conf
+
+
+
+###V-230361###
+echo "maxrepeat = 3" >> /etc/security/pwquality.conf
+
+
+###V-230360###
+echo "maxclassrepeat = 4" >> /etc/security/pwquality.conf
+
+
+###V-230367###
+rm -f /tmp/passwd-fn.txt
+sudo awk -F: '$5 > 60 {print $1 " " $5}' /etc/shadow >> /tmp/passwd-fn.txt
+sudo awk -F: '$5 <= 0 {print $1 " " $5}' /etc/shadow >> /tmp/passwd-fn.txt
+sed -i '/bin.*/d /tmp/passwd-fn.txt
+sed -i '/daemon.*/d /tmp/passwd-fn.txt
+sed -i '/adm.*/d /tmp/passwd-fn.txt
+sed -i '/lp.*/d /tmp/passwd-fn.txt
+sed -i '/sync.*/d /tmp/passwd-fn.txt
+sed -i '/shutdown.*/d /tmp/passwd-fn.txt
+sed -i '/halt.*/d /tmp/passwd-fn.txt
+sed -i '/mail.*/d /tmp/passwd-fn.txt
+sed -i '/operator.*/d /tmp/passwd-fn.txt
+sed -i '/games.*/d /tmp/passwd-fn.txt
+sed -i '/ftp.*/d /tmp/passwd-fn.txt
+sed -i '/nobody.*/d /tmp/passwd-fn.txt
+sed -i '/dbus.*/d /tmp/passwd-fn.txt
+sed -i '/systemd-coredump.*/d /tmp/passwd-fn.txt
+sed -i '/systemd-resolve.*/d /tmp/passwd-fn.txt
+sed -i '/tss.*/d /tmp/passwd-fn.txt
+sed -i '/polkitd.*/d /tmp/passwd-fn.txt
+sed -i '/clevis.*/d /tmp/passwd-fn.txt
+sed -i '/unbound.*/d /tmp/passwd-fn.txt
+sed -i '/libstoragemgmt.*/d /tmp/passwd-fn.txt
+sed -i '/setroubleshoot.*/d /tmp/passwd-fn.txt
+sed -i '/cockpit-ws.*/d /tmp/passwd-fn.txt
+sed -i '/cockpit-wsinstance.*/d /tmp/passwd-fn.txt
+sed -i '/sssd.*/d /tmp/passwd-fn.txt
+sed -i '/chrony.*/d /tmp/passwd-fn.txt
+sed -i '/sshd.*/d /tmp/passwd-fn.txt
+sed -i '/tcpdump.*/d /tmp/passwd-fn.txt
+sed -i '/postfix.*/d /tmp/passwd-fn.txt
+sed -i '/tns.*/d /tmp/passwd-fn.txt
+while read in; do chage -M 60 $in; done < /tmp/passwd-fn.txt
+
+
+
+###V-230366###
+sed -i 's/.PASS_MAX_DAYS.*/PASS_MAX_DAYS 60/g' /etc/login.defs
+
+
+###V-230365###
+sed -i 's/.PASS_MIN_DAYS.*/PASS_MIN_DAYS 1/g' /etc/login.defs
+
+
+###V-230364###
+rm -f /tmp/passwd-min-fn.txt
+awk -F: '$4 < 1 {print $1 " " $4}' /etc/shadow >> /tmp/passwd-min-fn.txt
+sed -i '/bin.*/d /tmp/passwd-min-fn.txt
+sed -i '/daemon.*/d /tmp/passwd-min-fn.txt
+sed -i '/adm.*/d /tmp/passwd-min-fn.txt
+sed -i '/lp.*/d /tmp/passwd-min-fn.txt
+sed -i '/sync.*/d /tmp/passwd-min-fn.txt
+sed -i '/shutdown.*/d /tmp/passwd-min-fn.txt
+sed -i '/halt.*/d /tmp/passwd-min-fn.txt
+sed -i '/mail.*/d /tmp/passwd-min-fn.txt
+sed -i '/operator.*/d /tmp/passwd-min-fn.txt
+sed -i '/games.*/d /tmp/passwd-min-fn.txt
+sed -i '/ftp.*/d /tmp/passwd-min-fn.txt
+sed -i '/nobody.*/d /tmp/passwd-min-fn.txt
+sed -i '/dbus.*/d /tmp/passwd-min-fn.txt
+sed -i '/systemd-coredump.*/d /tmp/passwd-min-fn.txt
+sed -i '/systemd-resolve.*/d /tmp/passwd-min-fn.txt
+sed -i '/tss.*/d /tmp/passwd-min-fn.txt
+sed -i '/polkitd.*/d /tmp/passwd-min-fn.txt
+sed -i '/clevis.*/d /tmp/passwd-min-fn.txt
+sed -i '/unbound.*/d /tmp/passwd-min-fn.txt
+sed -i '/libstoragemgmt.*/d /tmp/passwd-min-fn.txt
+sed -i '/setroubleshoot.*/d /tmp/passwd-min-fn.txt
+sed -i '/cockpit-ws.*/d /tmp/passwd-min-fn.txt
+sed -i '/cockpit-wsinstance.*/d /tmp/passwd-min-fn.txt
+sed -i '/sssd.*/d /tmp/passwd-min-fn.txt
+sed -i '/chrony.*/d /tmp/passwd-min-fn.txt
+sed -i '/sshd.*/d /tmp/passwd-min-fn.txt
+sed -i '/tcpdump.*/d /tmp/passwd-min-fn.txt
+sed -i '/postfix.*/d /tmp/passwd-min-fn.txt
+sed -i '/tns.*/d /tmp/passwd-min-fn.txt
+while read in; do chage -m 1 $in; done < /tmp/passwd-min-fn.txt
+
+
+###V-230518###
+sed -i 's/\/dev\/mapper\/rhel-var-audit.*/\/dev\/mapper\/rhel-var-log-audit \/var\/log\/audit xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+
+###V-230519###
+#Fixed in V-230518#
+#Run this command to fix if needed "sed -i 's/\/dev\/mapper\/rhel-var-audit.*/\/dev\/mapper\/rhel-var-log-audit \/var\/log\/audit xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+
+###V-230510###
+sed -i 's/tmpfs.*/tmpfs \/dev\/shm tmpfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+
+###V-230511###
+sed -i 's/\/dev\/mapper\/rhel-tmp.*/\/dev\/mapper\/rhel-tmp \/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+###V-244519###
+touch /etc/dconf/db/local.d/01-banner-message
+echo "[org/gnome/login-screen]" >> /etc/dconf/db/local.d/01-banner-message
+echo "banner-message-enable=true" >> /etc/dconf/db/local.d/01-banner-message
+dconf update
+
+
+###V-230513###
+#Fixed in V-230511#
+#Run this command if needed "sed -i 's/\/dev\/mapper\/rhel-tmp.*/\/dev\/mapper\/rhel-tmp \/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+
+###V-230514###
+sed -i 's/\/dev\/mapper\/rhel-var-log.*/\/dev\/mapper\/rhel-var-log \/var\/log xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+
+###V-230515###
+#Fixed in V-230514#
+#Run this command if needed "sed -i 's/\/dev\/mapper\/rhel-var-log.*/\/dev\/mapper\/rhel-var-log \/var\/log xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+
+###V-230516###
+#Fixed in V-230514#
+#Run this command if needed "sed -i 's/\/dev\/mapper\/rhel-var-log.*/\/dev\/mapper\/rhel-var-log \/var\/log xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+###V-230517###
+#Fixed in V-230518#
+#Run this command to fix if needed "sed -i 's/\/dev\/mapper\/rhel-var-audit.*/\/dev\/mapper\/rhel-var-log-audit \/var\/log\/audit xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+
+###V-230428###
+echo "-a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230429###
+echo "-a always,exit -F path=/usr/sbin/semanage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+
+###V-230424###
+echo "-a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=unset -k privileged-mount" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230425###
+echo "-a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=unset -k privileged-mount" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=unset -k privileged-mount" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230426###
+echo "-a always,exit -F path=/usr/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230427###
+echo "-a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230421###
+echo "-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230422###
+echo "-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-passwd" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230423###
+echo "-a always,exit -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=unset -k privileged-mount" >> /etc/audit/rules.d/audit.rules
+
+
+###V-237641###
+sed -i '/ALL ALL=(ALL) ALL/d' /etc/sudoers
+sed -i '/ALL ALL=(ALL:ALL) ALL/d' /etc/sudoers
+rm -f /tmp/sudoers-fn.txt
+ls /etc/sudoers.d/ >> /tmp/sudoers-fn.txt
+while read in; do sed -i '/ALL ALL=(ALL:ALL) ALL/d' $in; done < /tmp/sudoers-fn.txt
+while read in; do sed -i '/ALL ALL=(ALL) ALL/d' $in; done < /tmp/sudoers-fn.txt
+
+
+###V-237640###
+yum remove krb5-server -y
+
+
+###V-237643###
+sed -i 's/.Defaults timestamp_timeout=.*/Defaults timestamp_timeout=[5]/g' /etc/sudoers
+
+
+###V-237642###
+echo "Defaults !targetpw" >> /etc/sudoers
+echo "Defaults !rootpw" >> /etc/sudoers
+echo "Defaults !runaspw" >> /etc/sudoers
+
+
+###V-230512###
+#Fixed in V-230511#
+#Run this command if needed "sed -i 's/\/dev\/mapper\/rhel-tmp.*/\/dev\/mapper\/rhel-tmp \/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab"#
+
+
+###V-230327###
+sudo find / -fstype xfs -nogroup >> /tmp/STIG-Apply-Result.txt
+echo "Fix any files that do not have groups from above" >> /tmp/STIG-Apply-Result.txt
+
+###V-230326###
+sudo find / -fstype xfs -nouser >> /tmp/STIG-Apply-Result.txt
+echo "Fix any files that do not have user owner from above" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230325###
+chmod -R 0740 /home
+
+
+###V-230324###
+sed -i 's/.CREATE_HOME.*/CREATE_HOME yes/g' /etc/login.defs
+
+
+###V-230323###
+rm -f /tmp/homedir-fn.txt
+rm -f /tmp/home-user-fn.txt
+pwck -r >> /tmp/homedir-fn.txt
+sed -i 's/user .*: directory \///g' /tmp/homedir-fn.txt
+sed -i 's/.* does not exist//g' /tmp/homedir-fn.txt
+sed -i "s/'//g" /tmp/homedir-fn.txt
+sed -i 's/pwck: no changes//g' /tmp/homedir-fn.txt
+sed -i '/\/var/d' /tmp/homedir-fn.txt
+sed -i '/\/run/d' /tmp/homedir-fn.txt
+sed -i '/\/nonexisting/d' /tmp/homedir-fn.txt
+cp /tmp/homedir-fn.txt /tmp/home-user-fn.txt
+sed -i 's/\/home\//g' /tmp/home-user-fn.txt
+while read in; do mkdir $in; done < /tmp/homedir-fn.txt
+while read in && read in2 <&3; do chown $in2 $in; done </tmp/homedir-fn.txt 3</home-user-fn.txt
+while read in; do chgrp users $in; done < /tmp/homedir-fn.txt
+while read in; do chmod 0750 $in; done < /tmp/homedir-fn.txt
+
+
+###V-230322###
+##Fix later##
+
+
+###V-230321###
+ls /home >> /tmp/users-home-fn.txt
+sed -i 's/^/\/home\//' /tmp/users-home-fn.txt
+while read in; do chmod 0750 $in;done < /tmp/users-home-fn.txt
+
+
+###V-230320###
+#Fixed with V-230323#
+
+
+
+###V-230328###
+#Figure out how to automate later#
+
+
+###V-230521###
+#Fixed with V-230520#
+#Below Command will also fix it#
+#sed -i 's/\/dev\/mapper\/rhel-var-tmp*/\/dev\/mapper\/rhel-var-tmp \/var\/tmp xfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab#
+
+
+
+###V-230320###
+#Fixed with V-230323#
+
+
+###V-230328###
+#Figure out how to automate later#
+
+
+###V-230249###
+chown root /var/log
+
+
+###V-244554###
+echo "net.core.bpf_jit_harden = 2" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-244553###
+echo "net.ipv4.conf.all.accept_redirects = 0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+
+###V-244552###
+echo "net.ipv4.conf.default.accept_source_route=0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-244551###
+echo "net.ipv4.conf.all.accept_source_route=0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-244550###
+echo "net.ipv4.conf.default.accept_redirects = 0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230554###
+ip link set ens192 multicast off promisc off
+
+
+###V-230555###
+sed -i 's/.X11Forwading.*/X11Forwarding no/g' /etc/ssh/sshd_config
+systemctl restart sshd
+
+
+###V-230259###
+#Automate later#
+
+
+###V-230557###
+echo "server_args = -s /var/lib/tftpboot" >> /etc/xinetd.d/tftp
+
+
+###V-230550###
+postconf -e 'smtpd_client_restrictions = permit_mynetworks,reject'
+
+
+###V-230553###
+yum remove xorg-x11-server-Xorg xorg-x11-server-common xorg-x11-server-utils xorg-x11-server-Xwayland -y
+
+
+###V-230252###
+mv /etc/crypto-policies/back-ends/opensshserver.config /etc/crypto-policies/back-ends/opensshserver.config.bak
+touch /etc/crypto-policies/back-ends/opensshserver.config
+echo "-oCiphers=aes256-ctr,aes192-ctr,aes128-ctr" >> /etc/crypto-policies/back-ends/opensshserver.config
+
+
+###V-230251###
+echo "-oMACS=hmac-sha2-512,hmac-sha2-256" >> /etc/crypto-policies/back-ends/opensshserver.config
+
+
+###V-230250###
+chgrp root /var/log
+
+
+###V-230559###
+yum remove gssproxy -y
+
+
+###V-251707###
+#Automate later#
+
+
+
+###V-251708###
+#find /lib /lib64 /usr/lib /usr/lib64 ! -user root -type d -exec stat -c "%n %U" '{}' \;#
+#Automate later#
+
+
+###V-251709###
+#find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d -exec stat -c "%n %G" '{}' \;#
+#chgrp root [DIRECTORY]#
+#Automate later#
+
+
+###V-230378###
+sed -i "s/.FAIL_DELAY.*/FAIL_DELAY 4/g" /etc/login.defs
+
+
+###V-230379###
+deluser --remove-home gopher
+deluser --remove-home games
+
+
+###V-230279###
+grubby --update-kernel=ALL --args="slub_debug=P"
+
+
+###V-230288###
+sed -i 's/.StrictModes.*/StrictModes yes/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+
+###V-244545###
+systemctl enable --now fapolicyd
+
+
+###V-230286###
+chmod 0644 /etc/ssh/*key.pub
+systemctl restart sshd.service
+
+
+###V-230287###
+chmod 0640 /etc/ssh/ssh_host*key
+
+
+###V-230280###
+echo "kernel.randomize_va_space=2" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230282###
+sed -i 's/.SELINUXTYPE.*/SELINUXTYPE=targeted/g' /etc/selinux/config
+
+
+###V-230473###
+#stat -c "%U %n" /sbin/auditctl /sbin/aureport /sbin/ausearch /sbin/autrace /sbin/auditd /sbin/rsyslogd /sbin/augenrules#
+#chown root [audit_tool]#
+#automate later#
+
+
+
+###V-230472###
+#stat -c "%a %n" /sbin/auditctl /sbin/aureport /sbin/ausearch /sbin/autrace /sbin/auditd /sbin/rsyslogd /sbin/augenrules#
+#chmod 0755 [audit_tool]#
+#Automate later#
+
+
+
+###V-230471###
+chmod 0640 /etc/audit/rules.d/audit.rules
+chmod 0640 /etc/audit/rules.d/*.rules
+chmod 0640 /etc/audit/auditd.conf
+
+
+
+###V-230477###
+yum install rsyslog -y
+
+
+
+###V-230476###
+#grep -iw log_file /etc/audit/auditd.conf#
+#df -h /var/log/audit/#
+#du -sh [audit_partition]#
+#Automate Later#
+
+
+
+###V-230475###
+echo "/usr/sbin/auditctl p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/auditd p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/ausearch p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/aureport p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/autrace p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/rsyslogd p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+echo "/usr/sbin/augenrules p+i+n+u+g+s+b+acl+xattrs+sha512" >> /etc/aide.conf
+
+
+###V-230474###
+#stat -c "%G %n" /sbin/auditctl /sbin/aureport /sbin/ausearch /sbin/autrace /sbin/auditd /sbin/rsyslogd /sbin/augenrules#
+#chgrp root [audit_tool]#
+#Automate later#
+
+
+###V-230479###
+#grep @@ /etc/rsyslog.conf /etc/rsyslog.d/*.conf#
+#Automate later#
+
+
+###V-230478###
+yum install rsyslog-gnutls -y
+
+
+###V-230358###
+sed -i 's/.lcredit.*/lcredit = -1/g' /etc/security/pwquality.conf
+
+
+###V-230359###
+sed -i 's/.dcredit.*/dcredit = -1/g' /etc/security/pwquality.conf
+
+
+###V-230356###
+echo "password required pam_pwquality.so" >> /etc/pam.d/password-auth
+
+
+###V-230357###
+sed -i 's/.ucredit.*/ucredit = -1/g' /etc/security/pwquality.conf
+
+
+###V-230354###
+touch /etc/dconf/db/local.d/locks/session
+echo "/org/gnome/desktop/screensaver/lock-delay" >> /etc/dconf/profile/user
+
+
+###V-230355###
+echo "[certmap/testing.test/rule_name]" >> /etc/sssd/sssd.conf
+echo "matchrule =.*EDIPI@mil" >> /etc/sssd/sssd.conf
+echo "maprule = (userCertificate;binary={cert!bin})" >> /etc/sssd/sssd.conf
+echo "domains = testing.test" >> /etc/sssd/sssd.conf
+systemctl restart sssd.service
+
+
+###V-230352###
+touch /etc/dconf/db/local.d/00-screensaver
+echo "[org/gnome/desktop/session]" >> touch /etc/dconf/db/local.d/00-screensaver
+echo "# Set the lock time out to 900 seconds before the session is considered idle" >> touch /etc/dconf/db/local.d/00-screensaver
+echo "idle-delay=uint32 900" >> touch /etc/dconf/db/local.d/00-screensaver
+dconf update
+
+
+###V-230353###
+echo "set -g lock-after-time 900" >> /etc/tmux.conf
+
+
+###V-230344###
+echo "auth required pam_faillock.so preauth dir=/var/log/faillock silent audit deny=3 even_deny_root fail_interval=900 unlock_time=0" >> /etc/pam.d/system-auth
+echo "auth required pam_faillock.so authfail dir=/var/log/faillock unlock_time=0" >> /etc/pam.d/system-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/system-auth
+echo "auth required pam_faillock.so preauth dir=/var/log/faillock silent audit deny=3 even_deny_root fail_interval=900 unlock_time=0" >> /etc/pam.d/password-auth
+echo "auth required pam_faillock.so authfail dir=/var/log/faillock unlock_time=0" >> /etc/pam.d/password-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/password-auth
+systemctl restart sssd.service
+
+
+###V-244526###
+sed -i 's/.CRYPTO_POLICY=.*/#CRYPTO_POLICY=/g' /etc/sysconfig/sshd
+
+
+###V-244524###
+sed -i 's/password sufficient pam_unix.so.*/password sufficient pam_unix.so sha512/g' /etc/pam.d/system-auth
+echo "password sufficient pam_unix.so sha512" >> /etc/pam.d/system-auth
+
+
+###V-244525###
+sed -i 's/.ClientAliveInterval.*/ClientAliveInterval 600/g' /etc/ssh/sshd_config
+
+
+###V-244522###
+#Edit the /etc/grub.d/01_users file and add or modify the following lines:#
+#set superusers="[someuniquestringhere]"#
+#export superusers#
+#password_pbkdf2 [someuniquestringhere] ${GRUB2_PASSWORD}#
+#grub2-mkconfig -o /boot/grub2/grub.cfg#
+#Automate Later#
+
+
+###V-244523###
+echo "ExecStart=-/usr/lib/systemd/systemd-sulogin-shell emergency" >> /usr/lib/systemd/system/emergency.service
+
+
+###V-230556###
+sed -i 's/.X11UseLocalhost.*/X11UseLocalhost yes/g' /etc/ssh/sshd_config
+
+
+###V-230503###
+echo "install usb-storage /bin/true" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist usb-storage" >> /etc/modprobe.d/blacklist.conf
+
+
+###V-230502###
+systemctl stop autofs
+systemctl disable autofs
+
+
+###V-230500###
+#Automate Later#
+
+
+###V-230507###
+echo "install bluetooth /bin/true" >> /etc/modprobe.d/bluetooth.conf
+echo "blacklist bluetooth" >> /etc/modprobe.d/bluetooth.conf
+
+
+###V-230506###
+nmcli radio all off
+
+
+###V-244528###
+sed -i 's/.GSSAPIAuthentication.*/GSSAPIAuthentication no/g' /etc/ssh/sshd_config
+
+
+###V-244529###
+#This is fixed elsewhere I don't remember where at this time#
+#grep /var/tmp /etc/fstab#
+#set /var/tmp to be its own separate file system#
+
+
+###V-230439###
+echo "-a always,exit -F arch=b32 -S rename,unlink,rmdir,renameat,unlinkat -F auid>=1000 -F auid!=unset -k delete" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S rename,unlink,rmdir,renameat,unlinkat -F auid>=1000 -F auid!=unset -k delete" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230438###
+echo "-a always,exit -F arch=b32 -S init_module,finit_module -F auid>=1000 -F auid!=unset -k module_chng" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S init_module,finit_module -F auid>=1000 -F auid!=unset -k module_chng" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230437###
+echo "-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230436###
+echo "-a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=unset -k privileged-pam_timestamp_check" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230435###
+echo "-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230434###
+echo "-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=unset -k privileged-ssh" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230433###
+echo "-a always,exit -F path=/usr/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230432###
+echo "-a always,exit -F path=/usr/sbin/setsebool -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230431###
+echo "-a always,exit -F path=/usr/sbin/userhelper -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230430###
+echo "-a always,exit -F path=/usr/sbin/setfiles -F perm=x -F auid>=1000 -F auid!=unset -k privileged-unix-update" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230258###
+#find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! -user root -exec ls -l {} \;#
+#chown root [FILE]#
+#Automate Later#
+
+
+###V-230318###
+#find [PART] -xdev -type d -perm -0002 -uid +999 -print#
+#chown root [dir]#
+#Automate Later#
+
+
+###V-230319###
+#find [PART] -xdev -type d -perm -0002 -gid +999 -print#
+#chgrp root [dir]#
+#Automate Later#
+
+
+###V-230312###
+systemctl disable --now systemd-coredump.socket
+systemctl mask systemd-coredump.socket
+systemctl daemon-reload
+
+
+###V-230313###
+sed -i 's/1s/^/* hard core 0/' /etc/security/limits.conf
+
+
+###V-230310###
+systemctl disable kdump.service
+
+
+###V-230311###
+echo "kernel.core_pattern = |/bin/false" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230316###
+echo -n > /etc/resolv.conf
+
+
+###V-230317###
+#grep -i path= /home/*/.*#
+#Automate Later#
+
+
+###V-230314###
+echo "Storage=none" >> /etc/systemd/coredump.conf
+
+
+###V-230315###
+echo "ProcessSizeMax=0" >> /etc/systemd/coredump.conf
+
+
+###V-230488###
+yum remove abrt* -y
+
+
+###V-230489###
+yum remove sendmail -y
+
+
+###V-230482###
+echo "$ActionSendStreamDriverAuthMode x509/name" >> /etc/rsyslog.conf
+
+
+###V-230483###
+echo "space_left = 25%" >> /etc/audit/auditd.conf
+
+
+###V-230480###
+echo "overflow_action = syslog" >> /etc/audit/auditd.conf
+
+
+###V-230481###
+echo "$DefaultNetstreamDriver gtls" >> /etc/rsyslog.conf
+echo "$ActionSendStreamDriverMode 1" >> /etc/rsyslog.conf
+
+
+###V-230484###
+#Edit me#
+echo "server [ntp.server.name] iburst maxpoll 16" >> /etc/chrony.conf
+
+
+###V-230547###
+echo "kernel.kptr_restrict = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230546###
+sed -i 's/.kernel.yama.ptrace_scope.*/kernel.yama.ptrace_scope = 1/g' /etc/sysctl.d/99-sysctl.conf
+echo "kernel.yama.ptrace_scope = 1" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230545###
+echo "kernel.unprivileged_bpf_disabled = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230544###
+echo "net.ipv6.conf.all.accept_redirects = 0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230543###
+echo "net.ipv4.conf.default.send_redirects = 0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230542###
+echo "net.ipv6.conf.default.accept_ra=0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230541###
+echo "net.ipv6.conf.all.accept_ra=0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230540###
+echo "net.ipv6.conf.all.forwarding=0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230266###
+echo "kernel.kexec_load_disabled = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230267###
+echo "fs.protected_symlinks = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230262###
+#find -L /lib /lib64 /usr/lib /usr/lib64 ! -group root -exec ls -l {} \;#
+#chgrp root [FILE]#
+#Automate Later#
+
+
+###V-230263###
+touch /etc/cron.daily/aide
+echo "#!/bin/bash" >> /etc/cron.daily/aide
+echo '/usr/sbin/aide --check | /var/spool/mail -s "$HOSTNAME - Daily aide integrity check run" root@sysname.mil' >> /etc/cron.daily/aide
+
+
+###V-230260###
+#find -L /lib /lib64 /usr/lib /usr/lib64 -perm /022 -type f -exec ls -l {} \;#
+#chmod 755 [FILE]#
+#Automate Later#
+
+
+
+###V-230548###
+echo "user.max_user_namespaces = 0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-251717###
+echo "password required pam_pwhistory.so use_authtok remember=5 retry=3" >> /etc/pam.d/system-auth
+
+
+###V-251716###
+echo "retry = 3" >> /etc/security/pwquality.conf
+
+
+###V-251715###
+echo "password required pam_pwquality.so retry=3" >> /etc/pam.d/password-auth
+
+
+###V-251714###
+echo "password required pam_pwquality.so retry=3" >> /etc/pam.d/system-auth
+
+
+###V-251713###
+echo "password required pam_pwquality.so" >> /etc/pam.d/system-auth
+
+
+###V-251712###
+sed -i '/pam_succeed_if/d' /etc/ pam.d/sudo
+
+
+###V-251711###
+echo "#includedir /etc/sudoers.d" >> /etc/sudoers
+
+
+###V-251710###
+/usr/sbin/aide --check
+
+
+###V-251718###
+systemctl set-default multi-user.target
+
+
+###V-230278###
+grubby --update-kernel=ALL --args="vsyscall=none"
+
+
+###V-230299###
+#awk -F: '($3>=1000)&&($7 !~ /nologin/){print $1,$3,$6}' /etc/passwd#
+#Edit /etc/fstab to have nosuid option on file systems that contain user home directories#
+#Automate Later#
+
+
+###V-230298###
+systemctl start rsyslog.service
+systemctl enable rsyslog.service
+
+
+###V-230296###
+sed -i 's/.PermitRootLogin.*/PermitRootLogin no/g' /etc/ssh/sshd_config
+systemctl restart sshd.service
+
+
+###V-230295###
+#grep /tmp /etc/fstab#
+#/dev/mapper/rhel-tmp /tmp xfs defaults,nodev,nosuid,noexec 0 0#
+#I fixed this elsewhere I believe but don't remember which one#
+
+
+###V-230291###
+sed -i 's/.KerberosAuthentication.*/KerberosAuthentication no/g' /etc/ssh/sshd_config
+
+
+###V-230290###
+sed -i 's/.IgnoreUserKnownHosts.*/IgnoreUserKnownHosts yes/g' /etc/ssh/sshd_config
+
+
+###V-230446###
+echo "-a always,exit -F arch=b32 -S delete_module -F auid>=1000 -F auid!=unset -k module_chng" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S delete_module -F auid>=1000 -F auid!=unset -k module_chng" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230447###
+echo "-a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=unset -k privileged-crontab" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230444###
+echo "-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=unset -k privileged-gpasswd" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230448###
+echo "-a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230449###
+echo "-a always,exit -F arch=b32 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k perm_access" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k perm_access" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b32 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k perm_access" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k perm_access" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230256###
+mv /etc/crypto-policies/back-ends/gnutls.config /etc/crypto-policies/back-ends/gnutls.config.bak
+touch /etc/crypto-policies/back-ends/gnutls.config
+echo "+VERS-ALL:-VERS-DTLS0.9:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1:-VERS-DTLS1.0" >> /etc/crypto-policies/back-ends/gnutls.config
+
+
+###V-230268###
+echo "fs.protected_hardlinks = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230228###
+echo "auth.*;authpriv.*;daemon.* /var/log/secure" >> /etc/rsyslog.conf
+
+
+###V-230229###
+#Automate Later#
+
+
+###V-230222###
+#Update your system regularly#
+yum update -y
+
+
+###V-230226###
+echo "banner-message-text='You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.\nBy using this IS (which includes any device attached to this IS), you consent to the following conditions:\n-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.\n-At any time, the USG may inspect and seize data stored on this IS.\n-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.\n-This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.\n-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details. '" >> /etc/dconf/db/local.d/01-banner-message
+dconf update
+
+
+###V-230227###
+echo '"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.\nBy using this IS (which includes any device attached to this IS), you consent to the following conditions:\n\n-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.\n\n-At any time, the USG may inspect and seize data stored on this IS.\n\n-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.\n\n-This IS includes security measures (e.g., authentication and access controls) to protect USG interests -- not for your personal benefit or privacy.\n\n-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."' >> /etc/issue
+
+
+###V-230224###
+#crypto_LUKS disks#
+#Automate Later#
+
+
+
+###V-230225###
+sed -i 's/.banner.*/banner \/etc\/issue/g' /etc/ssh/sshd_config
+
+
+###V-230341###
+echo "silent" >> /etc/security/faillock.conf
+
+
+###V-230340###
+echo "auth required pam_faillock.so preauth dir=/var/log/faillock silent audit deny=3 even_deny_root fail_interval=900 unlock_time=0" >> /etc/pam.d/system-auth
+echo "auth required pam_faillock.so authfail dir=/var/log/faillock unlock_time=0" >> /etc/pam.d/system-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/system-auth
+echo "auth required pam_faillock.so preauth dir=/var/log/faillock silent audit deny=3 even_deny_root fail_interval=900 unlock_time=0" >> /etc/pam.d/password-auth
+echo "auth required pam_faillock.so authfail dir=/var/log/faillock unlock_time=0" >> /etc/pam.d/password-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/password-auth
+systemctl restart sssd.service
+
+
+###V-230343###
+echo "audit" >> /etc/security/faillock.conf
+
+
+###V-230342###
+#Fixed in V-230340#
+
+
+###V-230345###
+echo "even_deny_root" >> /etc/security/faillock.conf
+
+
+###V-230549###
+echo "net.ipv4.conf.all.rp_filter = 1" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230347###
+echo "lock-enabled=true" >> /etc/dconf/db/local.d/00-screensaver
+dconf update
+
+
+###V-230349###
+touch /etc/profile.d/tmux.sh
+echo "if [ "$PS1" ]; then" >> /etc/profile.d/tmux.sh
+echo "parent=$(ps -o ppid= -p $$)" >> /etc/profile.d/tmux.sh
+echo "name=$(ps -o comm= -p $parent)" >> /etc/profile.d/tmux.sh
+echo "case "$name" in (sshd|login) tmux ;; esac" >> /etc/profile.d/tmux.sh
+echo "fi" >> /etc/profile.d/tmux.sh
+
+
+###V-230348###
+echo "set -g lock-command vlock" >> /etc/tmux.conf
+echo "bind X lock-session" >> /etc/tmux.conf
+
+
+###V-230261###
+#find -L /lib /lib64 /usr/lib /usr/lib64 ! -user root -exec ls -l {} \;#
+#chown root [FILE]#
+#Automate Later#
+
+
+###V-244539###
+touch /etc/dconf/db/local.d/locks/session
+echo "/org/gnome/desktop/screensaver/lock-enabled"  >> /etc/dconf/db/local.d/locks/session
+
+
+###V-244538###
+echo "/org/gnome/desktop/session/idle-delay" >> /etc/dconf/db/local.d/locks/session
+
+
+
+###V-244531###
+chmod -R 0750 /home
+
+
+###V-244530###
+#this is fixed on another STIG that I can't remember which one#
+#mount | grep '\s/boot/efi\s'#
+#/boot/efi needs to have the nosuid option set#
+
+
+###V-244533###
+echo "auth required pam_faillock.so preauth" >> /etc/pam.d/system-auth
+echo "auth required pam_faillock.so authfail" >> /etc/pam.d/system-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/system-auth
+
+
+###V-244532###
+#automate later#
+
+
+###V-244535###
+echo "[org/gnome/desktop/screensaver]" >> /etc/dconf/db/local.d/00-screensaver
+echo "lock-delay=uint32 5" >> /etc/dconf/db/local.d/00-screensaver
+dconf update
+
+
+
+###V-244534###
+echo "auth required pam_faillock.so preauth" >> /etc/pam.d/password-auth
+echo "auth required pam_faillock.so authfail" >> /etc/pam.d/password-auth
+echo "account required pam_faillock.so" >> /etc/pam.d/password-auth
+
+
+###V-244537###
+yum install tmux -y
+
+
+###V-244536###
+touch /etc/dconf/db/local.d/02-login-screen
+echo "[org/gnome/login-screen]" >> touch /etc/dconf/db/local.d/02-login-screen
+echo "disable-user-list=true" >> touch /etc/dconf/db/local.d/02-login-screen
+
+
+###V-230538###
+echo "net.ipv6.conf.all.accept_source_route=0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230539###
+echo "net.ipv6.conf.default.accept_source_route=0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230536###
+echo "net.ipv4.conf.all.send_redirects=0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230537###
+echo "net.ipv4.icmp_echo_ignore_broadcasts=1" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230535###
+echo "net.ipv6.conf.default.accept_redirects = 0" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
+
+
+###V-230532###
+systemctl mask debug-shell.service
+systemctl daemon-reload
+
+
+###V-255924###
+echo "-oKexAlgorithms=ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512" >> /etc/crypto-policies/back-ends/opensshserver.config
+
+
+
+###V-230351###
+sed -i 's/.removal-action=.*/removal-action='lock-screen' /etc/dconf/db/distro.d/20-authselect
+
+
+###V-230392###
+sed -i 's/.disk_full_action.*/disk_full_action = SYSLOG/g' /etc/audit/auditd.conf
+
+
+
+###V-230393###
+sed -i 's/.local_events =.*/local_events = yes/g' /etc/audit/auditd.conf
+
+
+###V-230390###
+sed -i 's/.disk_error_action.*/disk_error_action = SYSLOG/g' /etc/audit/auditd.conf
+
+
+###V-230396###
+echo "log_group = root" >> /etc/audit/auditd.conf
+
+
+###V-230397###
+#grep -iw log_file /etc/audit/auditd.conf#
+#ls -al /var/log/audit/audit.log#
+#chown root [audit_log_file]#
+#Automate Later#
+
+
+###V-230394###
+sed -i 's/.name_format =.*/name_format = hostname/g' /etc/audit/auditd.conf
+
+
+###V-230398###
+#Fixed in V-230396#
+
+
+###V-230399###
+#grep -iw log_file /etc/audit/auditd.conf#
+#ls -ld /var/log/audit#
+#chown root [audit_log_directory]#
+#Automate later#
+
+
+###V-230402###
+echo "-e 2" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230403###
+echo "--loginuid-immutable" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230400###
+#grep -iw log_file /etc/audit/auditd.conf#
+#ls -ld /var/log/audit#
+#chgrp root [audit_log_directory]#
+#Automate Later#
+
+
+###V-230401###
+#grep -iw log_file /etc/audit/auditd.conf#
+#stat -c "%a %n" /var/log/audit#
+#chmod 0700 [audit_log_directory]#
+#Automate Later#
+
+
+###V-230406###
+echo "-w /etc/passwd -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230407###
+echo "-w /etc/gshadow -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230404###
+echo "-w /etc/shadow -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230405###
+echo "-w /etc/security/opasswd -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230408###
+echo "-w /etc/group -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230409###
+echo "-w /etc/sudoers -p wa -k identity" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230308###
+#I'm pretty this is fixed elsewhere#
+
+
+###V-230305###
+#Also pretty sure this is fixed elsewhere#
+
+
+###V-230304###
+#Also pretty sure this is fixed elsewhere#
+#no exec option on /etc/fstab##
+
+
+###V-230307###
+#nodev option fix in /etc/fstab for NFS-imported systems#
+#idk automate later#
+
+
+###V-230306###
+#nfs no exec option in /etc/fstab#
+
+
+###V-230301###
+#mount | grep '^/dev\S* on /\S' | grep --invert-match 'nodev'#
+# any output is a finding, configure /etc/fstab so all partitions have nodev option#
+#Automate Later maybe#
+
+
+
+###V-230300###
+#mount | grep '\s/boot\s'#
+#If /boot does not have "nosuid" option set that is a finding#
+#Maybe automate later, might've fixed this higher up#
+
+
+###V-230303###
+#Verify file systems that are used for removable media are mounted with the "nodev" option with the following command:#
+#more /etc/fstab#
+#If a file system found in "/etc/fstab" refers to removable media and it does not have the "nodev" option set, this is a finding.#
+#Configure the "/etc/fstab" to use the "nodev" option on file systems that are associated with removable media.#
+#Automate later if needed#
+
+
+###V-230302###
+#awk -F: '($3>=1000)&&($7 !~ /nologin/){print $1,$3,$6}' /etc/passwd#
+#more /etc/fstab#
+#configure /etc/fsatb to use "noexec" option on file systems with home directories#
+#Automate Later#
+
+
+###V-230493###
+echo "install uvcvideo /bin/true" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist uvcvideo" >> /etc/modprobe.d/blacklist.conf
+
+
+###V-250315###
+mkdir /var/log/faillock
+semanage fcontext -a -t faillog_t "/var/log/faillock(/.*)?"
+restorecon -R -v /var/log/faillock
+
+
+###V-250316###
+#Fixed in V-250315#
+
+
+###V-250317###
+echo "net.ipv4.conf.all.forwarding=0" >> /etc/sysctl.d/99-sysctl.conf
+
+
+###V-230271###
+sed -i '/NOPASSWD/d' /etc/sudoers
+grep -i nopasswd /etc/sudoers /etc/sudoers.d/* >> /tmp/sudoers-nopw.txt
+
+
+###V-230273###
+yum install openssl-pkcs11 -y
+
+
+###V-230272###
+sed -i '/!authenticate/d' /etc/sudoers
+
+
+###V-230275###
+yum install opensc -y
+
+
+###V-230274###
+echo "certificate_verification = ocsp_dgst=sha1" >> /etc/sssd/sssd.conf
+
+
+###V-230277###
+grubby --update-kernel=ALL --args="page_poison=1"
+
+
+###V-230276###
+dmesg | grep NX >> /tmp/NX-fix.txt
+#if nx does not show active then enable in BIOS#
+
+
+###V-230370###
+sed -i 's/.PASS_MIN_LEN.*/PASS_MIN_LEN 15/g' /etc/login.defs
+
+
+###V-230371###
+#awk -F ":" 'list[$3]++{print $1, $3}' /etc/passwd#
+#each user needs a  unique UID#
+#Automate Later#
+
+
+
+###V-230372###
+#Cert / multifactor auth for local accounts#
+#Automate Later#
+
+
+###V-230373###
+useradd -D -f 35
+
+
+###V-230374###
+#chage -l system_account_name#
+#chage -E `date -d "+3 days" +%Y-%m-%d` system_account_name#
+#Temp emergency account(s)#
+#Automate Later Maybe#
+
+
+###V-230375###
+echo "ocredit = -1" >> /etc/security/pwquality.conf
+
+
+###V-230376###
+echo "offline_credentials_expiration = 1" >> /etc/sssd/sssd.conf
+
+
+###V-230377###
+echo "dictcheck=1" >> /etc/security/pwquality.conf
+
+
+###V-230509###
+sed -i 's/tmpfs \/dev\/shm.*/tmpfs /dev/shm tmpfs defaults,nodev,nosuid,noexec 0 0/g' /etc/fstab
+
+
+###V-230508###
+#Fixed in 230509#
+
+
+###V-244521###
+#Automate Later#
+
+
+###V-230455###
+echo "-a always,exit -F arch=b32 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230456###
+echo "-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+echo "-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=unset -k perm_mod" >> /etc/audit/rules.d/audit.rules
+
+
+###V-230505###
+yum install firewalld.noarch -y
+
+
+###V-230504###
+#Create custom zones for your use case(s)#
+
+
+
+
+##################
+#####CAT 3's######
+##################
+
+echo Applying CAT III Stigs
+echo Applying CAT III Stigs >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230241###
+echo "-----------------------------" >> /tmp/STIG-Apply-Result.txt
+echo "###V-230241###" >> /tmp/STIG-Apply-Result.txt
+echo "Policycoreutils package" >> /tmp/STIG-Apply-Result.txt
+yum list installed policycoreutils >> /tmp/STIG-Apply-Result.txt
+if rpm -q policycoreutils | grep "not installed" > /dev/null
+then
+	yum install policycoreutils -y 
+fi
+
+
+###V-230381###
+echo "session required pam_lastlog.so showfailed" >> /etc/pam.d/postlogin
+
+
+###V-230468###
+grubby --update-kernel=ALL --args="audit=1"
+
+
+###V-230469###
+grubby --update-kernel=ALL --args="audit_backlog_limit=8192"
+
+
+###V-230551###
+echo "--------------------------------" >> /tmp/STIG-Apply-Result.txt
+echo "V-230551 AIDE" >> /tmp/STIG-Apply-Result.txt
+find / -name aide.conf >> /tmp/STIG-Apply-Result.txt
+echo "ensure the xattrs rule is present" >> /tmp/STIG-Apply-Result.txt
+echo "--------------------------------" >> /tmp/STIG-Apply-Result.txt
+echo "All= p+i+n+u+g+s+m+S+sha512+acl+xattrs+selinux" >> /etc/aide.conf
+echo "/bin All" >> /etc/aide.conf
+echo "/sbin All" >> /etc/aide.conf
+
+
+
+###V-230552###
+echo "VarFile = OwnerMode+n+l+X+acl" >> /etc/aide.conf
+
+
+###V-230253###
+echo "SSH_USE_STRONG_RNG=32" >> /etc/sysconfig/sshd
+
+
+###V-230285###
+systemctl enabled rngd.service
+systemctl start rngd.service
+
+
+###V-230281###
+sed -i 's/clean_requirements_on_remove=false/clean_requirements_on_remove=True/g' /etc/dnf/dnf.conf
+sed -i 's/clean_requirements_on_remove=False/clean_requirements_on_remove=True/g' /etc/dnf/dnf.conf
+sed -i 's/clean_requirements_on_remove=0/clean_requirements_on_remove=True/g' /etc/dnf/dnf.conf
+sed -i 's/clean_requirements_on_remove=no/clean_requirements_on_remove=True/g' /etc/dnf/dnf.conf
+
+
+###V-230470###
+sed -i 's/.AuditBackend=.*/AuditBackend=LinuxAudit/g' /etc/usbguard/usbguard-daemon.conf
+
+
+###V-230350###
+sed -i 's/.*tmux.*//g' /etc/shells
+
+
+###V-244527###
+if rpm -q rng-tools | grep "not installed" > /dev/null
+then
+	yum install rng-tools -y 
+fi
+
+
+###V-230486###
+sed -i 's/.*cmdport.*/cmdport 0/g' /etc/chrony.conf
+
+
+###V-230485###
+sed -i 's/.port.*/port 0/g' /etc/chrony.conf
+
+
+###V-230294###
+echo "Checking /var/log/audit separate partition"
+grep /var/log/audit /etc/fstab >> /tmp/STIG-Apply-Result.txt
+echo "if one exists do nothing, if it is not separate then create separate paritition for /var/log/audit" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230293###
+echo "Checking /var/log separate partition"
+grep /var/log /etc/fstab >> /tmp/STIG-Apply-Result.txt
+echo "if one exists do nothing, if it is not separate then create separate paritition for /var/log" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230292###
+echo "Checking /var separate partition"
+grep /var /etc/fstab >> /tmp/STIG-Apply-Result.txt
+echo "if one exists do nothing, if it is not separate then create separate paritition for /var" >> /tmp/STIG-Apply-Result.txt
+
+
+###V-230269###
+rm -f /tmp/conf-fn.txt
+ls /etc/sysctl.d/*.conf >> tmp/conf-fn.txt
+while read in; do sed -i 's/kernel.dmesg_restrict*/kernel.dmesg_restrict = 1/g' $in; done < /tmp/conf-fn.txt
+sysctl --system
+
+
+###V-230346###
+echo "hard maxlogins 10" >> /etc/security/limits.conf
+sed -i 's/.hard maxlogins.*/hard maxlogins 10/g' /etc/security/limits.conf
+
+
+###V-230395###
+echo "log_format = ENRICHED" >> /etc/audit/auditd.conf
+sed -i 's/.log_format.*/log_format = ENCRICHED/g' /etc/audit/auditd.conf
+
+
+###V-230499###
+echo "install firewire-core /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist firewire-core" /etc/modprobe.d/blacklist.conf
+
+
+###V-230498###
+echo "install cramfs /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist cramfs" /etc/modprobe.d/blacklist.conf
+
+
+###V-230495###
+echo "install can /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist can" /etc/modprobe.d/blacklist.conf
+
+
+###V-230494###
+echo "install atm /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist atm" /etc/modprobe.d/blacklist.conf
+
+
+###V-230497###
+echo "install tipc /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist tipc" /etc/modprobe.d/blacklist.conf
+
+
+###V-230496###
+echo "install sctp /bin/true" /etc/modprobe.d/blacklist.conf
+echo "blacklist sctp" /etc/modprobe.d/blacklist.conf
+
+
+###V-230491###
+grubby --update-kernel=ALL --args="pti=on"
+
+
+###V-230270###
+echo "kernel.perf_event_paranoid = 2" >> /etc/sysctl.d/99-sysctl.conf
+sysctl --system
